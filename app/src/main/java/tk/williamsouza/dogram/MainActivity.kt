@@ -1,0 +1,55 @@
+package tk.williamsouza.dogram
+
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import tk.williamsouza.dogram.adapters.DogRecyclerViewAdapter
+import tk.williamsouza.dogram.models.Dog
+import tk.williamsouza.dogram.repositories.DogRepository
+import tk.williamsouza.dogram.viewmodels.MainViewModel
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: MainViewModel
+    private lateinit var dogsAdapter : DogRecyclerViewAdapter
+    private var dogsList: ArrayList<Dog> = ArrayList()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val repository = DogRepository()
+        val viewModelFactory = MainViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+
+
+
+        viewModel.dogResponse.observe(this, Observer { response ->
+            dogsList.add(Dog(response.message, response.status))
+            Log.d("dog", response.message)
+        })
+
+        for (i in 0..5) {
+            viewModel.getDog()
+        }
+
+        initRecyclerView()
+        addDataSet()
+
+    }
+
+    private fun initRecyclerView() {
+        val dogsView = findViewById<RecyclerView>(R.id.dogsRecyclerView)
+        dogsView.layoutManager = LinearLayoutManager(this)
+        dogsAdapter = DogRecyclerViewAdapter()
+        dogsView.adapter = dogsAdapter
+    }
+
+    private fun addDataSet() {
+        dogsAdapter.submitList(dogsList)
+    }
+}
