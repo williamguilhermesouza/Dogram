@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     private fun initRecyclerView() {
         val dogsView = findViewById<RecyclerView>(R.id.dogsRecyclerView)
         dogsView.layoutManager = LinearLayoutManager(this)
+        val topSpacingDecoration = TopSpacingItemDecoration(30)
+        dogsView.addItemDecoration(topSpacingDecoration)
         dogsAdapter = DogRecyclerViewAdapter()
         dogsView.adapter = dogsAdapter
     }
