@@ -2,6 +2,8 @@ package tk.williamsouza.dogram
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -22,14 +24,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         val repository = DogRepository()
         val viewModelFactory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
 
 
-        viewModel.dogResponse.observe(this, Observer { response ->
+        viewModel.dogResponse.observe(this, { response ->
             dogsList.add(Dog(response.message, response.status))
+            addDataSet()
+            dogsAdapter.notifyDataSetChanged()
             Log.d("dog", response.message)
         })
 
@@ -38,8 +43,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         initRecyclerView()
-        addDataSet()
-
     }
 
     private fun initRecyclerView() {
